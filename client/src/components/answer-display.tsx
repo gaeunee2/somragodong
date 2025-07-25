@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Share2, Save, Bookmark } from "lucide-react";
+import { Share2, Download, Image } from "lucide-react";
 
 interface Answer {
   id: string;
@@ -17,37 +17,81 @@ interface AnswerDisplayProps {
 export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
   const { toast } = useToast();
 
-  const handleSaveAnswer = () => {
+  // 갤러리에 이미지로 저장하기
+  const handleSaveAsImage = async () => {
     try {
-      const savedAnswers = JSON.parse(localStorage.getItem('savedAnswers') || '[]');
-      const newAnswer = { ...answer, savedAt: new Date().toISOString() };
+      // Canvas를 사용하여 이미지 생성
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = 800;
+      canvas.height = 600;
+
+      // 배경 그라데이션 생성
+      const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+      gradient.addColorStop(0, '#6B46C1');
+      gradient.addColorStop(0.5, '#8B5CF6'); 
+      gradient.addColorStop(1, '#A855F7');
       
-      // Check if already saved
-      const exists = savedAnswers.find((saved: Answer) => saved.id === answer.id);
-      if (exists) {
-        toast({
-          title: "이미 저장된 답변입니다",
-          description: "답변이 이미 저장되어 있습니다",
-        });
-        return;
-      }
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 800, 600);
+
+      // 제목 텍스트
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 36px "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('솜라고동의 답변', 400, 120);
+
+      // 답변 텍스트
+      ctx.font = '28px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#F3E8FF';
       
-      savedAnswers.unshift(newAnswer);
+      // 텍스트 줄바꿈 처리
+      const words = answer.answer.split(' ');
+      let line = '';
+      let y = 200;
       
-      // Keep only last 50 answers
-      if (savedAnswers.length > 50) {
-        savedAnswers.splice(50);
-      }
-      
-      localStorage.setItem('savedAnswers', JSON.stringify(savedAnswers));
-      
-      toast({
-        title: "답변이 저장되었습니다",
-        description: "저장된 답변에서 다시 확인할 수 있습니다",
+      words.forEach((word) => {
+        const testLine = line + word + ' ';
+        const metrics = ctx.measureText(testLine);
+        
+        if (metrics.width > 600 && line !== '') {
+          ctx.fillText(line, 400, y);
+          line = word + ' ';
+          y += 40;
+        } else {
+          line = testLine;
+        }
       });
+      ctx.fillText(line, 400, y);
+
+      // 하단 텍스트
+      ctx.font = '20px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#DDD6FE';
+      ctx.fillText('- 2025 솜라고동 -', 400, 520);
+
+      // 이미지를 Blob으로 변환하여 다운로드
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `솜라고동_답변_${new Date().getTime()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          
+          toast({
+            title: "이미지가 저장되었습니다",
+            description: "갤러리에서 확인하실 수 있습니다",
+          });
+        }
+      }, 'image/png');
     } catch (error) {
       toast({
-        title: "저장 중 오류가 발생했습니다",
+        title: "이미지 저장 중 오류가 발생했습니다",
         description: "잠시 후 다시 시도해주세요",
         variant: "destructive",
       });
@@ -55,7 +99,7 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
   };
 
   const handleShareAnswer = async () => {
-    const shareText = `"${answer.answer}"\n\n- 솜라고동에서`;
+    const shareText = `"${answer.answer}"\n\n- 솜라고동에서 ⭐`;
     
     if (navigator.share) {
       try {
@@ -78,7 +122,7 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
     navigator.clipboard.writeText(text).then(() => {
       toast({
         title: "답변이 복사되었습니다",
-        description: "클립보드에 답변이 복사되었습니다",
+        description: "SNS에 붙여넣기하여 공유하세요",
       });
     }).catch(() => {
       toast({
@@ -89,12 +133,87 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
     });
   };
 
-  const handleCreateTalisman = () => {
-    // This would open a modal or navigate to talisman creation page
-    toast({
-      title: "부적 만들기 기능 준비중",
-      description: "곧 만나실 수 있습니다 ✨",
-    });
+  // 부적 이미지 만들기
+  const handleCreateTalisman = async () => {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = 400;
+      canvas.height = 600;
+
+      // 부적 배경 (노란색)
+      ctx.fillStyle = '#FCD34D';
+      ctx.fillRect(0, 0, 400, 600);
+
+      // 테두리
+      ctx.strokeStyle = '#DC2626';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(20, 20, 360, 560);
+
+      // 상단 장식
+      ctx.fillStyle = '#DC2626';
+      ctx.font = 'bold 24px "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('행운', 200, 80);
+
+      // 네잎클로버 간단한 그림 (텍스트로 대체)
+      ctx.font = '60px serif';
+      ctx.fillText('🍀', 200, 180);
+
+      // 답변 텍스트
+      ctx.font = '20px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#DC2626';
+      
+      // 텍스트 줄바꿈 처리
+      const words = answer.answer.split(' ');
+      let line = '';
+      let y = 280;
+      
+      words.forEach((word) => {
+        const testLine = line + word + ' ';
+        const metrics = ctx.measureText(testLine);
+        
+        if (metrics.width > 300 && line !== '') {
+          ctx.fillText(line, 200, y);
+          line = word + ' ';
+          y += 30;
+        } else {
+          line = testLine;
+        }
+      });
+      ctx.fillText(line, 200, y);
+
+      // 하단 텍스트
+      ctx.font = 'bold 20px "Noto Sans KR", sans-serif';
+      ctx.fillText('상승', 200, 540);
+
+      // 부적 이미지 다운로드
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `솜라고동_부적_${new Date().getTime()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          
+          toast({
+            title: "부적이 만들어졌습니다",
+            description: "갤러리에서 확인하세요 ✨",
+          });
+        }
+      }, 'image/png');
+    } catch (error) {
+      toast({
+        title: "부적 만들기 중 오류가 발생했습니다",
+        description: "잠시 후 다시 시도해주세요",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -140,12 +259,12 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
         transition={{ delay: 0.9, duration: 0.6 }}
       >
         <Button 
-          onClick={handleSaveAnswer}
+          onClick={handleSaveAsImage}
           className="mystical-button px-6 py-3 rounded-xl text-white font-medium border-none"
           variant="default"
         >
-          <Save className="w-4 h-4 mr-2" />
-          답변 저장하기
+          <Download className="w-4 h-4 mr-2" />
+          이미지로 저장
         </Button>
         
         <Button 
@@ -154,7 +273,7 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
           variant="default"
         >
           <Share2 className="w-4 h-4 mr-2" />
-          공유하기
+          SNS 공유하기
         </Button>
         
         <Button 
@@ -162,7 +281,7 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
           className="mystical-button px-6 py-3 rounded-xl text-white font-medium border-none"
           variant="default"
         >
-          <Bookmark className="w-4 h-4 mr-2" />
+          <Image className="w-4 h-4 mr-2" />
           부적 만들기
         </Button>
       </motion.div>

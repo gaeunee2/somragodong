@@ -119,7 +119,7 @@ export default function Home() {
           transition={{ delay: 1.2, duration: 0.8 }}
         >
           <p className="text-mystical-300 text-sm">
-            © 2024 솜라고동. 마법의 힘으로 제작되었습니다 ✨
+            © 2025 솜라고동, 김가은 노윤선 제작 ⭐
           </p>
         </motion.footer>
       </div>

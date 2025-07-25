@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a mystical fortune-telling application that combines modern React frontend with Express.js backend. The app allows users to ask questions and receive mystical AI-generated answers, resembling a magical conch shell experience. It features beautiful animations, a mystical UI theme, and integrates with OpenAI for generating responses.
+This is a mystical fortune-telling application called "솜라고동" that combines modern React frontend with Express.js backend. The app allows users to ask questions and receive mystical answers from a pre-defined list of 200+ Korean responses, resembling a magical conch shell experience. It features beautiful crystal ball animations, mystical purple UI theme, and includes image generation capabilities for sharing answers and creating talismans.
 
 ## User Preferences
 
@@ -21,10 +21,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
-- **Database**: PostgreSQL with Drizzle ORM
-- **Database Provider**: Neon Database (serverless PostgreSQL)
-- **API Integration**: OpenAI API for generating mystical responses
-- **Session Management**: In-memory storage (expandable to database)
+- **Database**: In-memory storage with MemStorage implementation
+- **Response System**: Pre-defined list of 200+ mystical Korean answers with random selection
+- **Daily Fortune**: Date-based deterministic fortune selection from curated list
+- **Session Management**: In-memory storage for Q&A pairs
 - **Development**: Hot reload with Vite integration
 
 ## Key Components
@@ -36,35 +36,35 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Features
 1. **Question Submission**: Users can ask questions through a mystical interface
-2. **AI Response Generation**: OpenAI GPT-4o generates mystical, philosophical answers
-3. **Answer Storage**: All Q&A pairs are saved with timestamps
-4. **Daily Fortune**: Additional feature for daily mystical predictions
-5. **Answer Management**: Users can save and view previous answers (localStorage)
+2. **Random Answer Generation**: System selects from 200+ pre-defined mystical Korean answers
+3. **Answer Storage**: All Q&A pairs are saved with timestamps in memory
+4. **Instant Fortune**: Creative fortune generation with randomized components
+5. **Image Generation**: Canvas-based image creation for answer sharing and talisman creation
+6. **Answer Sharing**: SNS sharing and image download functionality
 
 ### UI Components
-- **Mystical Orb**: Animated central element with shake, glow, and explosion effects
-- **Question Form**: Input form with validation and animation triggers
-- **Answer Display**: Formatted display of mystical responses with save functionality
+- **Crystal Ball**: 3D-styled mystical orb with realistic reflections, base, and multi-layered smoke/particle effects
+- **Question Form**: Glass-morphism input form with validation and animation triggers
+- **Answer Display**: Formatted display with image generation, SNS sharing, and talisman creation buttons
 - **Floating Particles**: Background animation for mystical atmosphere
-- **Additional Features**: Daily fortune and saved answers management
+- **Instant Fortune**: Single feature for creative real-time fortune generation
 
 ## Data Flow
 
 1. **User Input**: Questions submitted through the QuestionForm component
-2. **API Processing**: Express server validates input and calls OpenAI API
-3. **AI Generation**: OpenAI generates mystical responses based on system prompts
-4. **Data Storage**: Q&A pairs stored in PostgreSQL database via Drizzle ORM
-5. **Response Delivery**: Formatted answers returned to frontend with animations
-6. **Client Storage**: Users can save favorite answers to localStorage
+2. **API Processing**: Express server validates input and selects random answer from pre-defined list
+3. **Answer Generation**: System randomly selects from 200+ mystical Korean responses with simulated delay
+4. **Data Storage**: Q&A pairs stored in memory via MemStorage implementation
+5. **Response Delivery**: Formatted answers returned to frontend with crystal ball animations
+6. **Image Generation**: Canvas-based image creation for sharing and talisman features
 
 ## External Dependencies
 
 ### Core Dependencies
-- **OpenAI API**: GPT-4o model for generating mystical responses
-- **Neon Database**: Serverless PostgreSQL hosting
-- **Drizzle ORM**: Type-safe database operations
+- **In-Memory Storage**: MemStorage implementation for fast Q&A storage
+- **Canvas API**: Browser-native image generation for sharing and talismans
 - **TanStack Query**: Server state management and caching
-- **Framer Motion**: Animation library for smooth transitions
+- **Framer Motion**: Animation library for smooth transitions and particle effects
 
 ### UI Dependencies
 - **shadcn/ui**: Pre-built accessible components
@@ -91,8 +91,29 @@ Preferred communication style: Simple, everyday language.
 - **Scalability**: Serverless PostgreSQL allows automatic scaling
 
 ### Key Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string
-- `OPENAI_API_KEY`: API key for OpenAI services
 - `NODE_ENV`: Environment mode (development/production)
+
+## Recent Changes (July 2025)
+
+### Major Updates
+- **Removed OpenAI Dependency**: Replaced AI-generated responses with curated list of 200+ mystical Korean answers
+- **Enhanced Crystal Ball**: Upgraded from simple orb to realistic 3D crystal ball with base and star decoration
+- **Advanced Smoke Effects**: Multi-layered purple smoke with particles, wisps, and sparkling effects
+- **Image Generation Features**: Added Canvas-based image creation for answer sharing and talisman generation
+- **UI Simplification**: Reduced to single "Instant Fortune" feature, removed daily fortune and saved answers tabs
+- **Improved Animations**: Enhanced shake, glow, smoke, and explosion sequences for more dramatic effect
+
+### Technical Improvements
+- **Memory Storage**: Simplified storage using in-memory MemStorage for faster performance
+- **Answer Curation**: Hand-selected 200+ mystical Korean responses covering various life situations
+- **Fortune Generation**: Creative instant fortune system combining random elements (time + subject + prediction)
+- **Canvas Integration**: Browser-native image generation without external dependencies
+- **Mobile Optimization**: Responsive design improvements for crystal ball and animations
+
+### User Experience
+- **Faster Response Time**: Eliminated API calls for instant answer delivery
+- **Visual Appeal**: More realistic crystal ball appearance with proper lighting and reflections  
+- **Share Functions**: Direct image download and SNS sharing capabilities
+- **Talisman Creation**: Custom talisman image generation with traditional Korean design elements
 
 The application is designed to be easily deployable on platforms like Replit, with all necessary configuration files and a clear separation between development and production environments.

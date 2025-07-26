@@ -84,7 +84,7 @@ export default function QuestionForm({
     }
 
     askMutation.mutate(question);
-  }, [question, toast, askMutation]);
+  }, [question, toast, askMutation.mutate]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,7 +111,8 @@ export default function QuestionForm({
     if (onSubmitReady) {
       onSubmitReady(handleSubmit);
     }
-  }, [onSubmitReady, handleSubmit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onSubmitReady]);
 
   return (
     <motion.form

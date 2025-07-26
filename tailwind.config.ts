@@ -80,8 +80,8 @@ export default {
           },
         },
         sparkle: {
-          "0%, 100%": { opacity: "0", transform: "scale(0)" },
-          "50%": { opacity: "1", transform: "scale(1)" },
+          "0%, 100%": { opacity: "0.3", transform: "scale(0.8)" },
+          "50%": { opacity: "1", transform: "scale(1.2)" },
         },
         "cosmic-swirl": {
           "0%": { transform: "rotate(0deg) scale(1)" },
@@ -95,7 +95,6 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         sparkle: "sparkle 2s ease-in-out infinite",
-        "cosmic-swirl": "cosmic-swirl 8s ease-in-out infinite",
       },
     },
   },

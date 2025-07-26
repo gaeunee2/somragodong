@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import MysticalOrb from "../components/mystical-orb";
 import QuestionForm from "../components/question-form";
@@ -16,10 +16,18 @@ interface Answer {
 export default function Home() {
   const [currentAnswer, setCurrentAnswer] = useState<Answer | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [submitQuestion, setSubmitQuestion] = useState<() => void>(
-    () => () => {},
-  );
+  const [submitQuestion, setSubmitQuestion] = useState<() => void | null>(null);
   const [questionText, setQuestionText] = useState("");
+
+  // 별 위치와 속성 고정
+  const stars = useMemo(() => {
+    return [...Array(30)].map(() => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 4,
+      duration: 3 + Math.random() * 2,
+    }));
+  }, []);
 
   const handleAnswerReceived = (answer: Answer) => {
     setCurrentAnswer(answer);
@@ -35,8 +43,11 @@ export default function Home() {
   };
 
   const handleOrbClick = () => {
-    if (!questionText.trim()) return;
-    if (!isAnimating && questionText.trim()) {
+    if (!questionText.trim()) {
+      // Don't show toast here - let the form handle it
+      return;
+    }
+    if (!isAnimating && questionText.trim() && submitQuestion) {
       submitQuestion();
     }
   };
@@ -45,22 +56,18 @@ export default function Home() {
     <div className="mystical-bg relative overflow-hidden">
       {/* ⭐ 반짝이는 별 효과 - 고정 위치 */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        {[...Array(30)].map((_, i) => {
-          const left = Math.random() * 100;
-          const top = Math.random() * 100;
-          return (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full animate-sparkle"
-              style={{
-                left: `${left}%`,
-                top: `${top}%`,
-                animationDelay: `${Math.random() * 4}s`,
-                animationDuration: `${3 + Math.random() * 2}s`,
-              }}
-            />
-          );
-        })}
+        {stars.map((star, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full animate-sparkle opacity-80"
+            style={{
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              animationDelay: `${star.delay}s`,
+              animationDuration: `${star.duration}s`,
+            }}
+          />
+        ))}
       </div>
       <FloatingParticles />
 
@@ -104,7 +111,7 @@ export default function Home() {
             onAnimationStart={handleAnimationStart}
             onAnimationEnd={handleAnimationEnd}
             disabled={isAnimating}
-            onSubmitReady={setSubmitQuestion}
+            onSubmitReady={(fn) => setSubmitQuestion(() => fn)}
             onQuestionChange={setQuestionText}
           />
         </motion.div>

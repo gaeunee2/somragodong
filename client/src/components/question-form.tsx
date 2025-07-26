@@ -100,7 +100,7 @@ export default function QuestionForm({
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="마음속 깊은 질문을 입력해주세요..."
+        placeholder="질문을 입력하고 구슬을 클릭하시오."
         className="question-input w-full h-32 px-6 py-4 rounded-2xl text-white placeholder-mystical-300 resize-none text-lg focus:outline-none transition-all duration-300 border-none"
         disabled={disabled || askMutation.isPending}
         maxLength={500}
@@ -117,7 +117,6 @@ export default function QuestionForm({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            Enter로 질문하기 (Shift+Enter로 줄바꿈)
           </motion.span>
         )}
       </div>

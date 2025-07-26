@@ -95,7 +95,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
           >
-            마법의 솜라고동이 해답을 줄 것이다...
+            마법의 솜라고동이 해답을 줄 것입니다.
           </motion.p>
         </motion.header>
 

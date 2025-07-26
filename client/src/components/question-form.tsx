@@ -129,7 +129,7 @@ export default function QuestionForm({
           onQuestionChange?.(e.target.value);
         }}
         onKeyDown={handleKeyDown}
-        placeholder="질문을 입력하고 구슬을 클릭하시오."
+        placeholder="질문을 입력하고 구슬을 클릭하세요."
         className="question-input w-full h-32 px-6 py-4 rounded-2xl text-white placeholder-mystical-300 resize-none text-lg focus:outline-none transition-all duration-300 border-none"
         disabled={disabled || askMutation.isPending}
         maxLength={500}

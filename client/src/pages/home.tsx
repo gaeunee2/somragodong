@@ -16,6 +16,10 @@ interface Answer {
 export default function Home() {
   const [currentAnswer, setCurrentAnswer] = useState<Answer | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [submitQuestion, setSubmitQuestion] = useState<() => void>(
+    () => () => {},
+  );
+  const [questionText, setQuestionText] = useState("");
 
   const handleAnswerReceived = (answer: Answer) => {
     setCurrentAnswer(answer);
@@ -30,24 +34,34 @@ export default function Home() {
     setIsAnimating(false);
   };
 
+  const handleOrbClick = () => {
+    if (!questionText.trim()) return;
+    if (!isAnimating && questionText.trim()) {
+      submitQuestion();
+    }
+  };
+
   return (
     <div className="mystical-bg relative overflow-hidden">
-        {/* ⭐ 반짝이는 별 효과 추가 시작 */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          {[...Array(50)].map((_, i) => (
+      {/* ⭐ 반짝이는 별 효과 - 고정 위치 */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(30)].map((_, i) => {
+          const left = Math.random() * 100;
+          const top = Math.random() * 100;
+          return (
             <div
               key={i}
-              className="absolute w-1 h-1 bg-white rounded-full opacity-80 animate-sparkle"
+              className="absolute w-1 h-1 bg-white rounded-full animate-sparkle"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 2}s`,
+                left: `${left}%`,
+                top: `${top}%`,
+                animationDelay: `${Math.random() * 4}s`,
+                animationDuration: `${3 + Math.random() * 2}s`,
               }}
             />
-          ))}
-        </div>
-        {/* ⭐ 반짝이는 별 효과 추가 끝 */}
+          );
+        })}
+      </div>
       <FloatingParticles />
 
       <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center relative z-10">
@@ -59,13 +73,14 @@ export default function Home() {
           transition={{ duration: 1, ease: "easeOut" }}
         >
           <motion.h1
-            className="text-5xl md:text-7xl font-bold text-white mb-4 drop-shadow-2xl"
+            className="text-5xl md:text-7xl font-bold mb-4 drop-shadow-2xl"
             style={{ fontFamily: "'Crimson Text', serif" }}
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
           >
-            솜라고동
+            <span className="text-purple-400 glow-purple">솜</span>
+            <span className="text-white">라고동</span>
           </motion.h1>
           <motion.p
             className="text-xl md:text-2xl text-mystical-200 font-light tracking-wide"
@@ -89,15 +104,18 @@ export default function Home() {
             onAnimationStart={handleAnimationStart}
             onAnimationEnd={handleAnimationEnd}
             disabled={isAnimating}
+            onSubmitReady={setSubmitQuestion}
+            onQuestionChange={setQuestionText}
           />
         </motion.div>
 
         {/* Mystical Orb */}
         <motion.div
-          className="mb-16"
+          className="mb-16 cursor-pointer"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.6, duration: 1, ease: "easeOut" }}
+          onClick={handleOrbClick}
         >
           <MysticalOrb
             isAnimating={isAnimating}

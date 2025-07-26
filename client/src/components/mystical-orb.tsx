@@ -43,7 +43,7 @@ export default function MysticalOrb({ isAnimating, onAnimationEnd }: MysticalOrb
 
   return (
     <div className="relative flex flex-col items-center justify-center">
-      {/* Multiple Smoke Effects */}
+      {/* Multiple Enhanced Smoke Effects */}
       <AnimatePresence>
         {animationStep === 'smoke' && (
           <>
@@ -131,7 +131,7 @@ export default function MysticalOrb({ isAnimating, onAnimationEnd }: MysticalOrb
 
       {/* Main Crystal Ball */}
       <motion.div
-        className="mystical-orb relative z-10"
+        className="mystical-orb relative z-10 hover:scale-105 transition-transform duration-300"
         animate={{
           x: animationStep === 'shake' ? [-15, 15, -10, 10, -5, 5, 0] : 0,
           y: animationStep === 'idle' ? [0, -25, 0] : 0,
@@ -142,7 +142,20 @@ export default function MysticalOrb({ isAnimating, onAnimationEnd }: MysticalOrb
           y: { duration: 8, repeat: Infinity, ease: "easeInOut" },
           scale: { duration: 2, repeat: animationStep === 'glow' ? Infinity : 0, ease: "easeInOut" },
         }}
-      />
+      >
+        {/* Inner Cosmic Effect */}
+        <div className="absolute inset-4 rounded-full animate-cosmic-swirl opacity-80" 
+             style={{
+               background: `
+                 radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.6) 0%, transparent 8%),
+                 radial-gradient(circle at 70% 20%, rgba(147, 51, 234, 0.7) 0%, transparent 12%),
+                 radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.5) 0%, transparent 15%),
+                 radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.4) 0%, transparent 8%),
+                 radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.3) 0%, transparent 20%)
+               `
+             }}
+        />
+      </motion.div>
 
       {/* Crystal Ball Base */}
       <motion.div 

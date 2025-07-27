@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Share2, Download, Image } from "lucide-react";
+import { Share2, Download, Image as ImageIcon } from "lucide-react";
 
 interface Answer {
   id: string;
@@ -146,70 +146,126 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
       canvas.width = 400;
       canvas.height = 600;
 
-      // 부적 배경 (노란색)
-      ctx.fillStyle = "#FCD34D";
+      // 배경: 노란 단색
+      ctx.fillStyle = "#FACC15";
       ctx.fillRect(0, 0, 400, 600);
 
       // 테두리
-      ctx.strokeStyle = "#DC2626";
-      ctx.lineWidth = 8;
+      ctx.fillStyle = "#B91C1C";
+      ctx.fillRect(0, 0, 400, 600); // 바깥 테두리
+      ctx.fillStyle = "#FACC15";
+      ctx.fillRect(10, 10, 380, 580); // 안쪽 배경
+
+      // 안쪽 테두리
+      ctx.strokeStyle = "#B91C1C";
+      ctx.lineWidth = 3;
       ctx.strokeRect(20, 20, 360, 560);
 
-      // 상단 장식
-      ctx.fillStyle = "#DC2626";
-      ctx.font = 'bold 24px "Noto Sans KR", sans-serif';
+      // 🧧 코너 문양 (간단하게 표현한 예시)
+      ctx.lineWidth = 2;
+      const drawCorner = (x: number, y: number, clockwise: boolean) => {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + (clockwise ? 10 : -10), y);
+        ctx.lineTo(x + (clockwise ? 10 : -10), y + 10);
+        ctx.stroke();
+      };
+      drawCorner(20, 20, true); // 좌상단
+      drawCorner(380, 20, false); // 우상단
+      drawCorner(20, 580, false); // 좌하단
+      drawCorner(380, 580, true); // 우하단
+
+      // 🎴 글씨 스타일
+      ctx.fillStyle = "#B91C1C";
+      ctx.font = 'bold 36px "궁서", "serif"';
       ctx.textAlign = "center";
-      ctx.fillText("행운", 200, 80);
 
-      // 네잎클로버 간단한 그림 (텍스트로 대체)
-      ctx.font = "60px serif";
-      ctx.fillText("🍀", 200, 180);
+      // 도트 캐릭터 로드 후 빨간 도트로 렌더링
+      const img = new Image();
+      img.src = "/도트_솜.jpg"; // public 폴더 경로 기준
 
-      // 답변 텍스트
-      ctx.font = '20px "Noto Sans KR", sans-serif';
-      ctx.fillStyle = "#DC2626";
+      img.onload = () => {
+        // resize 원본 → 32x48
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = 32;
+        tempCanvas.height = 48;
+        const tempCtx = tempCanvas.getContext("2d");
+        if (!tempCtx) return;
 
-      // 텍스트 줄바꿈 처리
-      const words = answer.answer.split(" ");
-      let line = "";
-      let y = 280;
+        tempCtx.drawImage(img, 0, 0, 32, 48);
+        const imgData = tempCtx.getImageData(0, 0, 32, 48).data;
 
-      words.forEach((word) => {
-        const testLine = line + word + " ";
-        const metrics = ctx.measureText(testLine);
+        const pixelSize = 5;
+        const offsetX = 120;
+        const offsetY = 40;
 
-        if (metrics.width > 300 && line !== "") {
+        for (let y = 0; y < 48; y++) {
+          for (let x = 0; x < 32; x++) {
+            const index = (y * 32 + x) * 4;
+            const r = imgData[index];
+            const g = imgData[index + 1];
+            const b = imgData[index + 2];
+            const a = imgData[index + 3];
+
+            // 흰 배경은 제외
+            const isWhite = r > 240 && g > 240 && b > 240;
+            if (a > 0 && !isWhite) {
+              ctx.fillStyle = "#B91C1C";
+              ctx.fillRect(
+                offsetX + x * pixelSize,
+                offsetY + y * pixelSize,
+                pixelSize,
+                pixelSize
+              );
+            }
+          }
+        }
+
+        // 💬 질문 텍스트
+        ctx.font = 'bold 20px "Noto Sans KR", sans-serif';
+        ctx.fillStyle = "#B91C1C";
+        ctx.textAlign = "center";
+
+        const questionLines = wrapText(ctx, answer.question, 300);
+        let y = 300;
+        questionLines.forEach((line) => {
           ctx.fillText(line, 200, y);
-          line = word + " ";
-          y += 30;
-        } else {
-          line = testLine;
-        }
-      });
-      ctx.fillText(line, 200, y);
+          y += 28;
+        });
 
-      // 하단 텍스트
-      ctx.font = 'bold 20px "Noto Sans KR", sans-serif';
-      ctx.fillText("상승", 200, 540);
+        // 📜 답변 텍스트
+        ctx.font = '18px "Noto Sans KR", sans-serif';
+        const answerLines = wrapText(ctx, answer.answer, 300);
+        y += 20;
+        answerLines.forEach((line) => {
+          ctx.fillText(line, 200, y);
+          y += 24;
+        });
 
-      // 부적 이미지 다운로드
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `솜라고동_부적_${new Date().getTime()}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+        // ⛩ 하단 서명
+        ctx.font = 'bold 16px "Noto Sans KR", sans-serif';
+        ctx.fillStyle = "#991B1B";
+        ctx.fillText("ⓒ 럭키솜", 200, 550);
 
-          toast({
-            title: "부적이 만들어졌습니다",
-            description: "갤러리에서 확인하세요 ✨",
-          });
-        }
-      }, "image/png");
+        // 다운로드
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `럭키솜_부적_${new Date().getTime()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            toast({
+              title: "부적이 만들어졌습니다",
+              description: "갤러리에서 확인하세요 ✨",
+            });
+          }
+        }, "image/png");
+      };
     } catch (error) {
       toast({
         title: "부적 만들기 중 오류가 발생했습니다",
@@ -218,6 +274,26 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
       });
     }
   };
+
+  // ✅ 텍스트 줄바꿈 유틸 함수
+  function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    const words = text.split(" ");
+    const lines: string[] = [];
+    let line = "";
+
+    for (let word of words) {
+      const testLine = line + word + " ";
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && line !== "") {
+        lines.push(line.trim());
+        line = word + " ";
+      } else {
+        line = testLine;
+      }
+    }
+    lines.push(line.trim());
+    return lines;
+  }
 
   return (
     <motion.div
@@ -287,7 +363,7 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
           className="mystical-button px-6 py-3 rounded-xl text-white font-medium border-none"
           variant="default"
         >
-          <Image className="w-4 h-4 mr-2" />
+          <ImageIcon className="w-4 h-4 mr-2" />
           부적 만들기
         </Button>
       </motion.div>

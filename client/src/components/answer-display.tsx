@@ -211,46 +211,23 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
       ctx.font = 'bold 36px "궁서", "serif"';
       ctx.textAlign = "center";
 
-      // 도트 캐릭터 로드 후 빨간 도트로 렌더링
-      const img = new Image();
-      img.src = "/도트_솜.jpg"; // public 폴더 경로 기준
-
-      img.onload = () => {
-        // resize 원본 → 32x48
-        const tempCanvas = document.createElement("canvas");
-        tempCanvas.width = 32;
-        tempCanvas.height = 48;
-        const tempCtx = tempCanvas.getContext("2d");
-        if (!tempCtx) return;
-
-        tempCtx.drawImage(img, 0, 0, 32, 48);
-        const imgData = tempCtx.getImageData(0, 0, 32, 48).data;
-
-        const pixelSize = 5;
-        const offsetX = 120;
-        const offsetY = 40;
-
-        for (let y = 0; y < 48; y++) {
-          for (let x = 0; x < 32; x++) {
-            const index = (y * 32 + x) * 4;
-            const r = imgData[index];
-            const g = imgData[index + 1];
-            const b = imgData[index + 2];
-            const a = imgData[index + 3];
-
-            // 흰 배경은 제외
-            const isWhite = r > 240 && g > 240 && b > 240;
-            if (a > 0 && !isWhite) {
-              ctx.fillStyle = "#B91C1C";
-              ctx.fillRect(
-                offsetX + x * pixelSize,
-                offsetY + y * pixelSize,
-                pixelSize,
-                pixelSize
-              );
-            }
-          }
-        }
+      const pixelSize = 6;
+      const offsetX = 150;
+      const offsetY = 100;
+      const pixels = [
+        [3, 0], [4, 0], [5, 0], [6, 0],
+        [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1],
+        [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2],
+        [3, 3], [4, 3], [5, 3], [6, 3],
+        [2, 4], [3, 4], [4, 4], [5, 4], [6, 4], [7, 4],
+        [2, 5], [3, 5], [4, 5], [5, 5], [6, 5], [7, 5],
+        [3, 6], [4, 6], [5, 6], [6, 6],
+        [3, 7], [4, 7], [5, 7], [6, 7]
+      ];
+      ctx.fillStyle = "#B91C1C";
+      pixels.forEach(([x, y]) => {
+        ctx.fillRect(offsetX + x * pixelSize, offsetY + y * pixelSize, pixelSize, pixelSize);
+      });
 
         // 💬 질문 텍스트
         ctx.font = 'bold 20px "Noto Sans KR", sans-serif';
@@ -296,7 +273,6 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
             });
           }
         }, "image/png");
-      };
     } catch (error) {
       toast({
         title: "부적 만들기 중 오류가 발생했습니다",

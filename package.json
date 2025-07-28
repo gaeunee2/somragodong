@@ -5,12 +5,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
-    "build:client": "cd client && npm install && npm run build",
+    "build": "vite build && npm run build:server",
     "build:server": "esbuild server/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist/index.js",
-    "build": "npm run build:client && npm run build:server",
-    "start": "node --import=dotenv/config dist/index.js",
-    "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "start": "node --import=dotenv/config dist/index.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -49,6 +46,7 @@
     "cmdk": "^1.1.1",
     "connect-pg-simple": "^10.0.0",
     "date-fns": "^3.6.0",
+    "dotenv": "^17.2.1",
     "drizzle-orm": "^0.39.1",
     "drizzle-zod": "^0.7.0",
     "embla-carousel-react": "^8.6.0",

@@ -1,3 +1,4 @@
+// server/index.ts
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -24,11 +25,9 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
-
       log(logLine);
     }
   });
@@ -47,21 +46,16 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
+  // 🌟 Render는 production 환경에서 실행됨
+  if (process.env.NODE_ENV === "development") {
+    await setupVite(app, server); // 로컬에서만 vite dev 서버 실행
   } else {
-    serveStatic(app);
+    serveStatic(app); // 빌드된 정적 파일 서빙
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen(5000, "127.0.0.1", () => {
-    log(`Serving on http://127.0.0.1:5000`);
+  // ✅ 포트는 반드시 process.env.PORT 사용해야 함!
+  const port = parseInt(process.env.PORT || "5000", 10);
+  server.listen(port, () => {
+    log(`✅ Server running at http://localhost:${port}`);
   });
 })();

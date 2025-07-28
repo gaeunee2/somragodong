@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import MysticalOrb from "../components/mystical-orb";
 import QuestionForm from "../components/question-form";
@@ -16,21 +16,16 @@ interface Answer {
 export default function Home() {
   const [currentAnswer, setCurrentAnswer] = useState<Answer | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [submitQuestion, setSubmitQuestion] = useState<() => void | null>(null);
-  const [questionText, setQuestionText] = useState("");
 
-  // 별 위치와 속성 고정
-  const stars = useMemo(() => {
-    return [...Array(30)].map(() => ({
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 4,
-      duration: 3 + Math.random() * 2,
-    }));
-  }, []);
+  const answerRef = useRef<HTMLDivElement | null>(null); // ✅ ref 추가
 
   const handleAnswerReceived = (answer: Answer) => {
     setCurrentAnswer(answer);
+
+    // ✅ 답변이 도착한 후 스크롤 이동
+    setTimeout(() => {
+      answerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 400); // animation 종료 시점 고려
   };
 
   const handleAnimationStart = () => {
@@ -42,66 +37,69 @@ export default function Home() {
     setIsAnimating(false);
   };
 
-  const handleOrbClick = () => {
-    if (!questionText.trim()) {
-      // Don't show toast here - let the form handle it
-      return;
-    }
-    if (!isAnimating && questionText.trim() && submitQuestion) {
-      submitQuestion();
-    }
-  };
-
   return (
-    <div className="mystical-bg relative overflow-hidden">
-      {/* ⭐ 반짝이는 별 효과 - 고정 위치 */}
+    <div className="mystical-bg relative overflow-hidden min-h-screen">
+      {/* 별 반짝이 배경 */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        {stars.map((star, i) => (
+        {[...Array(50)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-white rounded-full animate-sparkle opacity-80"
+            className="absolute w-1 h-1 bg-accent rounded-full animate-sparkle"
             style={{
-              left: `${star.left}%`,
-              top: `${star.top}%`,
-              animationDelay: `${star.delay}s`,
-              animationDuration: `${star.duration}s`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`,
             }}
           />
         ))}
       </div>
+
       <FloatingParticles />
 
-      <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center relative z-10">
+      <div className="container mx-auto px-5 py-20 min-h-screen flex flex-col items-center justify-center relative z-10">
         {/* Header */}
         <motion.header
-          className="text-center mb-12"
+          className="text-center mb-20"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
         >
           <motion.h1
-            className="text-5xl md:text-7xl font-bold mb-4 drop-shadow-2xl"
-            style={{ fontFamily: "'Crimson Text', serif" }}
+            className="text-6xl md:text-8xl font-bold text-white tracking-wide drop-shadow-glow font-cinzel mb-6"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
           >
-            <span className="text-purple-400 glow-purple">솜</span>
-            <span className="text-white">라고동</span>
+            <span className="text-purple-300">솜</span>라고동
           </motion.h1>
+
           <motion.p
-            className="text-xl md:text-2xl text-mystical-200 font-light tracking-wide"
+            className="text-sm text-white md:text-2xl text-mystical-200 font-light tracking-wide"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
           >
-            마법의 솜라고동이 해답을 줄 것입니다.
+            마법의 솜라고동이 당신의 질문에 답해드립니다!
           </motion.p>
         </motion.header>
 
+        {/* Mystical Orb */}
+        <motion.div
+          className="mb-5"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 1, ease: "easeOut" }}
+        >
+          <MysticalOrb
+            isAnimating={isAnimating}
+            onAnimationEnd={handleAnimationEnd}
+          />
+        </motion.div>
+
         {/* Question Form */}
         <motion.div
-          className="w-full max-w-2xl mb-16"
+          className="w-full max-w-2xl mb-10"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
@@ -111,29 +109,14 @@ export default function Home() {
             onAnimationStart={handleAnimationStart}
             onAnimationEnd={handleAnimationEnd}
             disabled={isAnimating}
-            onSubmitReady={(fn) => setSubmitQuestion(() => fn)}
-            onQuestionChange={setQuestionText}
-          />
-        </motion.div>
-
-        {/* Mystical Orb */}
-        <motion.div
-          className="mb-16 cursor-pointer"
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, duration: 1, ease: "easeOut" }}
-          onClick={handleOrbClick}
-        >
-          <MysticalOrb
-            isAnimating={isAnimating}
-            onAnimationEnd={handleAnimationEnd}
           />
         </motion.div>
 
         {/* Answer Display */}
         {currentAnswer && (
           <motion.div
-            className="w-full max-w-2xl mb-16"
+            ref={answerRef} // ✅ ref 연결
+            className="w-full max-w-2xl mb-16 text-white"
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
@@ -160,7 +143,7 @@ export default function Home() {
           transition={{ delay: 1.2, duration: 0.8 }}
         >
           <p className="text-mystical-300 text-sm">
-            © 2025 솜라고동, 김가은 노윤선 제작 ⭐
+            © 2025 솜라고동, 김가은 노윤선 제작 ☆
           </p>
         </motion.footer>
       </div>

@@ -19,84 +19,103 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
 
   // 갤러리에 이미지로 저장하기
   const handleSaveAsImage = async () => {
-    try {
-      // Canvas를 사용하여 이미지 생성
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+  try {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      canvas.width = 800;
-      canvas.height = 600;
+    canvas.width = 800;
+    canvas.height = 600;
 
-      // 배경 그라데이션 생성
-      const gradient = ctx.createLinearGradient(0, 0, 800, 600);
-      gradient.addColorStop(0, "#6B46C1");
-      gradient.addColorStop(0.5, "#8B5CF6");
-      gradient.addColorStop(1, "#A855F7");
+    // 배경: 남보라 그라데이션
+    const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+    gradient.addColorStop(0, "#1a1333");  // 어두운 보라
+    gradient.addColorStop(1, "#3b0764");  // 짙은 자주
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 800, 600);
 
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 800, 600);
-
-      // 제목 텍스트
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = 'bold 36px "Noto Sans KR", sans-serif';
-      ctx.textAlign = "center";
-      ctx.fillText("솜라고동의 답변", 400, 120);
-
-      // 답변 텍스트
-      ctx.font = '28px "Noto Sans KR", sans-serif';
-      ctx.fillStyle = "#F3E8FF";
-
-      // 텍스트 줄바꿈 처리
-      const words = answer.answer.split(" ");
-      let line = "";
-      let y = 200;
-
-      words.forEach((word) => {
-        const testLine = line + word + " ";
-        const metrics = ctx.measureText(testLine);
-
-        if (metrics.width > 600 && line !== "") {
-          ctx.fillText(line, 400, y);
-          line = word + " ";
-          y += 40;
-        } else {
-          line = testLine;
-        }
-      });
-      ctx.fillText(line, 400, y);
-
-      // 하단 텍스트
-      ctx.font = '20px "Noto Sans KR", sans-serif';
-      ctx.fillStyle = "#DDD6FE";
-      ctx.fillText("- 2025 솜라고동 -", 400, 520);
-
-      // 이미지를 Blob으로 변환하여 다운로드
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `솜라고동_답변_${new Date().getTime()}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-
-          toast({
-            title: "이미지가 저장되었습니다",
-            description: "갤러리에서 확인하실 수 있습니다",
-          });
-        }
-      }, "image/png");
-    } catch (error) {
-      toast({
-        title: "이미지 저장 중 오류가 발생했습니다",
-        description: "잠시 후 다시 시도해주세요",
-        variant: "destructive",
-      });
+    // 별빛 효과
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * 800;
+      const y = Math.random() * 600;
+      const radius = Math.random() * 1.5;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.random()})`;
+      ctx.fill();
     }
-  };
+
+    // 제목 텍스트
+    ctx.font = 'bold 32px "Crimson Text", serif';
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.shadowColor = "#f3e8ff";
+    ctx.shadowBlur = 8;
+    ctx.fillText("솜라고동의 답변", 400, 90);
+    ctx.shadowBlur = 0; // 그림자 해제
+
+    // 답변 텍스트
+    ctx.font = 'italic 24px "Noto Sans KR", sans-serif';
+    ctx.fillStyle = "#fef3c7"; // 연한 금색
+    ctx.textAlign = "center";
+    ctx.shadowColor = "#ffffff";
+    ctx.shadowBlur = 10;
+
+    const answerText = `"${answer.answer}"`; // 따옴표 감싸기
+    const words = answerText.split(" ");
+    let line = "";
+    let y = 200;
+
+    words.forEach((word) => {
+      const testLine = line + word + " ";
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > 550 && line !== "") {
+        ctx.fillText(line, 400, y);
+        line = word + " ";
+        y += 36;
+      } else {
+        line = testLine;
+      }
+    });
+    ctx.fillText(line, 400, y);
+
+    ctx.shadowBlur = 0; // 그림자 해제
+
+    // 장식 아이콘 (중앙 하단)
+    ctx.font = '40px serif';
+    ctx.fillText("✨🌙⭐", 400, 480);
+
+    // 하단 서명
+    ctx.font = '20px serif';
+    ctx.fillStyle = "#c4b5fd"; // 연보라
+    ctx.fillText("ⓒ 2025 솜라고동", 400, 540);
+
+    // 저장 처리
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `솜라고동_응답_${new Date().getTime()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        toast({
+          title: "이미지가 저장되었습니다",
+          description: "이제 SNS에 공유해보세요 ✨",
+        });
+      }
+    }, "image/png");
+  } catch (error) {
+    toast({
+      title: "이미지 저장 중 오류가 발생했습니다",
+      description: "잠시 후 다시 시도해주세요",
+      variant: "destructive",
+    });
+  }
+};
 
   const handleShareAnswer = async () => {
     const shareText = `"${answer.answer}"\n\n- 솜라고동에서 ⭐`;
@@ -150,30 +169,42 @@ export default function AnswerDisplay({ answer }: AnswerDisplayProps) {
       ctx.fillStyle = "#FACC15";
       ctx.fillRect(0, 0, 400, 600);
 
-      // 테두리
-      ctx.fillStyle = "#B91C1C";
-      ctx.fillRect(0, 0, 400, 600); // 바깥 테두리
-      ctx.fillStyle = "#FACC15";
-      ctx.fillRect(10, 10, 380, 580); // 안쪽 배경
+      // 테두리 설정
+      const canvasWidth = 400;
+      const canvasHeight = 600;
+      const borderWidth = 10; // 외곽 테두리 두께
+      const padding = 5;       // 안쪽 여백
+      const cornerOffset = borderWidth + padding; // 코너 위치 기준
 
-      // 안쪽 테두리
+      // 🎴 테두리 그리기
+      ctx.fillStyle = "#B91C1C";
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight); // 바깥 테두리
+      ctx.fillStyle = "#FACC15";
+      ctx.fillRect(borderWidth, borderWidth, canvasWidth - 2 * borderWidth, canvasHeight - 2 * borderWidth);
+
+      // 내부 장식 선
       ctx.strokeStyle = "#B91C1C";
       ctx.lineWidth = 3;
-      ctx.strokeRect(20, 20, 360, 560);
+      ctx.strokeRect(
+        borderWidth + 4,
+        borderWidth + 4,
+        canvasWidth - (borderWidth + 4) * 2,
+        canvasHeight - (borderWidth + 4) * 2
+      );
 
-      // 🧧 코너 문양 (간단하게 표현한 예시)
-      ctx.lineWidth = 2;
-      const drawCorner = (x: number, y: number, clockwise: boolean) => {
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + (clockwise ? 10 : -10), y);
-        ctx.lineTo(x + (clockwise ? 10 : -10), y + 10);
-        ctx.stroke();
+      // 🧧 코너 문양: 작은 사각형 그리기
+      const squareSize = 10;
+      const drawCornerSquare = (x: number, y: number) => {
+        ctx.fillStyle = "#B91C1C";
+        ctx.fillRect(x, y, squareSize, squareSize);
       };
-      drawCorner(20, 20, true); // 좌상단
-      drawCorner(380, 20, false); // 우상단
-      drawCorner(20, 580, false); // 좌하단
-      drawCorner(380, 580, true); // 우하단
+
+      // 네 모서리에 사각형
+      drawCornerSquare(borderWidth, borderWidth); // 좌상단
+      drawCornerSquare(canvasWidth - borderWidth - squareSize, borderWidth); // 우상단
+      drawCornerSquare(borderWidth, canvasHeight - borderWidth - squareSize); // 좌하단
+      drawCornerSquare(canvasWidth - borderWidth - squareSize, canvasHeight - borderWidth - squareSize); // 우하단
+
 
       // 🎴 글씨 스타일
       ctx.fillStyle = "#B91C1C";

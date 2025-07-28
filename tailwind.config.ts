@@ -5,6 +5,10 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        cinzel: ['"Cinzel Decorative"', "serif"],
+        crimson: ['"Crimson Text"', "serif"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -13,6 +17,9 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
         card: {
           DEFAULT: "var(--card)",
           foreground: "var(--card-foreground)",
@@ -41,15 +48,17 @@ export default {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
         },
-        border: "var(--border)",
-        input: "var(--input)",
-        ring: "var(--ring)",
         chart: {
           "1": "var(--chart-1)",
           "2": "var(--chart-2)",
           "3": "var(--chart-3)",
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
+        },
+         mystical: {
+          blue: "#6d77ff",
+          purple: "#c084fc",
+          pink: "#f0abfc",
         },
         sidebar: {
           DEFAULT: "var(--sidebar-background)",
@@ -61,6 +70,9 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
+      },
+      dropShadow: {
+        glow: "0 0 20px rgba(200, 150, 255, 0.6)",
       },
       keyframes: {
         "accordion-down": {
@@ -94,7 +106,9 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        sparkle: "sparkle 2s ease-in-out infinite",
+        sparkle: "sparkle 2s infinite ease-in-out",
+        glow: "glow 2s ease-in-out infinite alternate",
+        float: "float 6s ease-in-out infinite",
       },
     },
   },

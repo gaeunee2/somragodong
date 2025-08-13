@@ -143,7 +143,7 @@ export default function Home() {
           transition={{ delay: 1.2, duration: 0.8 }}
         >
           <p className="text-mystical-300 text-sm">
-            © 2025 솜라고동, 김가은 노윤선 제작 ☆
+            © 2025 솜라고동 ☆
           </p>
         </motion.footer>
       </div>
